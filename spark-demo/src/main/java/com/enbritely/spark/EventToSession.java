@@ -27,10 +27,9 @@ public class EventToSession {
         options.addOption(OptionBuilder.withLongOpt("input").isRequired().hasArg().withDescription("Location of event files to process").create("i"));
         options.addOption(OptionBuilder.withLongOpt("output").isRequired().hasArg().withDescription("Target location where the output are written").create("o"));
         options.addOption(OptionBuilder.withLongOpt("limit").isRequired().hasArg().withDescription("Threshold of click counts").create("l"));
-        options.addOption("t", "test", false, "Test flag, runs with local Spark. SPARK_HOME env variable has to be set.");
-        options.addOption("s", "spark", true, "Spark home directory, used only in test mode");
 
         CommandLine params = null;
+
         try {
             params = parser.parse(options, args);
         } catch (ParseException e) {
@@ -45,21 +44,9 @@ public class EventToSession {
         boolean testMode = params.hasOption("test");
 
         SparkConf conf = new SparkConf().setAppName("safary-event-to-session");
-        if (testMode) {
-            String sparkHome = params.getOptionValue("spark");
-            if (sparkHome == null || sparkHome.equals("")) {
-                System.err.println("In test mode you need to pass Spark home!");
-                return;
-            }
-            conf.setSparkHome(sparkHome);
-            conf.setMaster("local[2]");
-        }
 
         JavaSparkContext sparkContext = new JavaSparkContext(conf);
         run(input, output, threshold, sparkContext);
-
-
-
     }
 
     public static void run(String eventLocation, String dest, int threshold, JavaSparkContext context) {
