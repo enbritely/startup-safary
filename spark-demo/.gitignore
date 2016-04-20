@@ -1,3 +1,4 @@
 target/
 *.iml
 sessions/
+bad_sessions/
